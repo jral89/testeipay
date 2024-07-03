@@ -150,48 +150,32 @@
         var nascimento = document.getElementById('nascimento').value;
         var email = document.getElementById('email').value;
         var genero = document.getElementById('genero').value;
-        var strCPF = String(cpf).replace(/[^\d]/g, '');
-        let cpfValido = validaCPF(cpf);
+       // var strCPF = String(cpf).replace(/[^\d]/g, '');
+        //let cpfValido = validaCPF(cpf);
         let nascimentoValido = validadata();
-        console.log('cpf: ' + cpfValido, 'nascimento: ' + nascimentoValido);
+        console.log('nascimento: ' + nascimentoValido);
 
-        if (strCPF.length !== 11){
-            alert('preencha seu cpf completo');
-        } else {
-            if(cpfValido == true && nascimentoValido == true){
-                var rotas = [
-                    '{{ route('cpf.cadastrar') }}',
-                    'https://api-teste.ip4y.com.br/cadastro',
-                ];
-
-                for(link = 0; link < rotas.length; link++){
-                    $.ajax({
-                        url: rotas[link],
-                        method: 'POST',
-                        data: {
-                            cpf: cpf,
-                            nome: nome,
-                            sobrenome: sobrenome,
-                            nascimento: nascimento,
-                            email: email,
-                            genero: genero
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            console.log(response.cadastro);
-                            if(response.cadastro === 'true'){
-                                alert('CPF cadastrado com sucesso');
-                                location.reload();
-                            } else {
-                                alert('CPF já cadastrado');
-                            }
-                        }
-                    });
+        $.ajax({
+            url: '{{ route('cpf.alterar') }}',
+            method: 'post',
+            data: {
+                cpf: cpf,
+                nome: nome,
+                sobrenome: sobrenome,
+                nascimento: nascimento,
+                email: email,
+                genero: genero
+            },
+            dataType: 'json',
+            success: function(response) {
+                console.log(response.cadastro);
+                if(response.cadastro === 'true'){
+                    alert('CPF cadastrado com sucesso');
+                    location.reload();
+                } else {
+                    alert('CPF já cadastrado');
                 }
-
-            } else {
-                alert('digite um cpf válido e/ou data de nascimento válidos');
             }
-        }
+        });
     });
 </script>

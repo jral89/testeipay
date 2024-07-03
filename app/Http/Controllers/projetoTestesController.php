@@ -26,9 +26,10 @@ class projetoTestesController extends Controller
         return view("cadpessoafisica");
     }
 
-    public function updatePessoaFisica(Request $request)
+    public function updatePessoaFisica($cpf)
     {
-        $cadastro = pessoaFisica::where('cpf',$request->cpf)->get();
+
+        $cadastro = pessoaFisica::where('cpf',$cpf)->get();
         //dd($res);
         return view("updatepessoafisica")->with('cadastro', $cadastro);
     }
@@ -72,5 +73,36 @@ class projetoTestesController extends Controller
 
         return response()->json(['delete' => 'true']);
 
+    }
+
+    public function alteraCPF(Request $request)
+    {
+        //dd($request->all());
+        //$cpf = pessoaFisica::where('cpf', '=', $request->cpf)->select('cpf', 'nome', 'sobrenome', 'nascimento', 'email', 'genero')->get();
+        $cpf = pessoaFisica::find($request->cpf);
+
+        //if ($cpf == ''){
+            $request->validate([
+                'cpf' => 'required|string|max:255',
+                'nome' => 'required|string|max:255',
+                'sobrenome' => 'required|string|max:255',
+                'nascimento' => 'required|string|max:255',
+                'email' => 'required|string|max:255',
+                'genero' => 'required|string|max:255',
+            ]);
+
+            //$cpf->cpf = $request->cpf;
+            $cpf->nome = $request->nome;
+            $cpf->sobrenome = $request->sobrenome;
+            $cpf->nascimento = $request->nascimento;
+            $cpf->email = $request->email;
+            $cpf->genero = $request->genero;
+
+            $cpf->save();
+
+            return response()->json(['cadastro' => 'true']);
+        //} else {
+        //    return response()->json(['cadastro' => 'false']);
+        //}
     }
 }
