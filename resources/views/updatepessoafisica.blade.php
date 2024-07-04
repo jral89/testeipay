@@ -1,13 +1,12 @@
 @include('includes.header')
 
-
 <div class="container">
-    <h2>Update Pessoa Fisica</h2>
+    <h2>Atualizar Pessoa Fisica</h2>
     <div class="col-12">
         <form action="" id="form_cpf_update" method="POST">
             <div class="form-group">
                 <label for="cpf">cpf:</label>
-                <input type="text" minlength="14" maxlength="14" class="form-control" id="cpf" placeholder="Digite o cpf" required value="{{$cadastro[0]->cpf}}">
+                <input type="text" minlength="14" maxlength="14" class="form-control" id="cpf" placeholder="Digite o cpf" required disabled value="{{$cadastro[0]->cpf}}">
             </div>
             <div class="form-group">
                 <label for="nome">nome:</label>
@@ -27,9 +26,12 @@
             </div>
             <div class="form-group">
                 <label for="genero">genero:</label>
-                <input type="text" class="form-control" id="genero" placeholder="Digite o genero" required value="{{$cadastro[0]->genero}}">
+                <select name="genero" class="form-control" id="genero" placeholder="Digite o genero" required value="{{$cadastro[0]->genero}}">
+                    <option value="M">Masculino</option>
+                    <option value="F">Feminino</option>
+                </select>
             </div>
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
+            <button type="submit" class="btn btn-primary">Atualizar</button>
         </form>
     </div>
 
@@ -51,7 +53,6 @@
         var strCPF = String(cpf).replace(/[^\d]/g, '')
 
         if (strCPF.length !== 11){
-            $('#validacaoCPF').val(false);
             return false;
         }
 
@@ -67,7 +68,6 @@
             '88888888888',
             '99999999999',
         ].indexOf(strCPF) !== -1){
-            $('#validacaoCPF').val(false);
             return false;
         }
 
@@ -81,7 +81,6 @@
         }
 
         if (Resto != parseInt(strCPF.substring(9, 10)) ){
-            $('#validacaoCPF').val(false);
             return false;
         }
 
@@ -97,11 +96,9 @@
         }
 
         if (Resto != parseInt(strCPF.substring(10, 11) ) ){
-            $('#validacaoCPF').val(false);
             return false;
         }
 
-        $('#validacaoCPF').val(true);
         return true;
     }
 
@@ -122,13 +119,10 @@
 
         if(idade < 18){
             alert("Pessoas menores de 18 não podem se cadastrar.");
-            $('#validacaoNascimento').val(false);
             return false;
         }
 
         if(idade >= 18 && idade <= 60){
-            alert("Maior de 18, pode se cadastrar.");
-            $('#validacaoNascimento').val(true);
             return true;
         }
 
@@ -150,32 +144,42 @@
         var nascimento = document.getElementById('nascimento').value;
         var email = document.getElementById('email').value;
         var genero = document.getElementById('genero').value;
-       // var strCPF = String(cpf).replace(/[^\d]/g, '');
-        //let cpfValido = validaCPF(cpf);
         let nascimentoValido = validadata();
-        console.log('nascimento: ' + nascimentoValido);
 
-        $.ajax({
-            url: '{{ route('cpf.alterar') }}',
-            method: 'post',
-            data: {
-                cpf: cpf,
-                nome: nome,
-                sobrenome: sobrenome,
-                nascimento: nascimento,
-                email: email,
-                genero: genero
-            },
-            dataType: 'json',
-            success: function(response) {
-                console.log(response.cadastro);
-                if(response.cadastro === 'true'){
-                    alert('CPF cadastrado com sucesso');
-                    location.reload();
-                } else {
-                    alert('CPF já cadastrado');
+        if(nascimentoValido == true) {
+            $.ajax({
+                url: '{{ route('cpf.alterar') }}',
+                method: 'post',
+                data: {
+                    cpf: cpf,
+                    nome: nome,
+                    sobrenome: sobrenome,
+                    nascimento: nascimento,
+                    email: email,
+                    genero: genero
+                },
+                dataType: 'json',
+                success: function (response) {
+                    console.log(response.cadastro);
+                    if (response.cadastro === 'true') {
+                        Swal.fire({
+                            title: "CPF atualizado com sucesso.",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "CPF já cadastrado.",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 </script>

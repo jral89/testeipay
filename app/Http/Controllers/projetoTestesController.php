@@ -9,7 +9,6 @@ use App\Models\pessoaFisica;
 
 class projetoTestesController extends Controller
 {
-    //
     /**
      * Show the profile for the given user.
      *
@@ -17,27 +16,25 @@ class projetoTestesController extends Controller
      * @return Response
      */
     public function index(){
+
         $cpfs = pessoaFisica::select('cpf', 'nome', 'sobrenome', 'nascimento', 'email', 'genero')->get();
         return view("home")->with('cpfs', $cpfs);
+
     }
 
-    public function cadPessoaFisica(Request $request)
-    {
+    public function cadPessoaFisica(Request $request){
         return view("cadpessoafisica");
     }
 
-    public function updatePessoaFisica($cpf)
-    {
+    public function updatePessoaFisica($cpf){
 
         $cadastro = pessoaFisica::where('cpf',$cpf)->get();
-        //dd($res);
         return view("updatepessoafisica")->with('cadastro', $cadastro);
+
     }
 
-    public function cadCPF(Request $request)
-    {
+    public function cadCPF(Request $request){
 
-        //$cpf = pessoaFisica::where('cpf', '=', $request->cpf)->select('cpf', 'nome', 'sobrenome', 'nascimento', 'email', 'genero')->get();
         $cpf = pessoaFisica::find($request->cpf);
 
         if ($cpf == ''){
@@ -66,43 +63,36 @@ class projetoTestesController extends Controller
         }
     }
 
-    public function delCPF(Request $request)
-    {
+    public function delCPF(Request $request){
 
         $res = pessoaFisica::where('cpf',$request->cpf)->delete();
-
         return response()->json(['delete' => 'true']);
 
     }
 
     public function alteraCPF(Request $request)
     {
-        //dd($request->all());
-        //$cpf = pessoaFisica::where('cpf', '=', $request->cpf)->select('cpf', 'nome', 'sobrenome', 'nascimento', 'email', 'genero')->get();
+
         $cpf = pessoaFisica::find($request->cpf);
 
-        //if ($cpf == ''){
-            $request->validate([
-                'cpf' => 'required|string|max:255',
-                'nome' => 'required|string|max:255',
-                'sobrenome' => 'required|string|max:255',
-                'nascimento' => 'required|string|max:255',
-                'email' => 'required|string|max:255',
-                'genero' => 'required|string|max:255',
-            ]);
+        $request->validate([
+            'cpf' => 'required|string|max:255',
+            'nome' => 'required|string|max:255',
+            'sobrenome' => 'required|string|max:255',
+            'nascimento' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
+            'genero' => 'required|string|max:255',
+        ]);
 
-            //$cpf->cpf = $request->cpf;
-            $cpf->nome = $request->nome;
-            $cpf->sobrenome = $request->sobrenome;
-            $cpf->nascimento = $request->nascimento;
-            $cpf->email = $request->email;
-            $cpf->genero = $request->genero;
+        $cpf->nome = $request->nome;
+        $cpf->sobrenome = $request->sobrenome;
+        $cpf->nascimento = $request->nascimento;
+        $cpf->email = $request->email;
+        $cpf->genero = $request->genero;
 
-            $cpf->save();
+        $cpf->save();
 
-            return response()->json(['cadastro' => 'true']);
-        //} else {
-        //    return response()->json(['cadastro' => 'false']);
-        //}
+        return response()->json(['cadastro' => 'true']);
+
     }
 }

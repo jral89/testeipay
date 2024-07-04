@@ -1,6 +1,5 @@
 @include('includes.header')
 
-
 <div class="container">
     <h2>Cadastro Pessoa Fisica</h2>
     <div class="col-12">
@@ -27,7 +26,10 @@
             </div>
             <div class="form-group">
                 <label for="genero">genero:</label>
-                <input type="text" class="form-control" id="genero" placeholder="Digite o genero" required>
+                <select name="genero" class="form-control" id="genero" placeholder="Digite o genero" required>
+                    <option value="M">Masculino</option>
+                    <option value="F">Feminino</option>
+                </select>
             </div>
             <input type="button" onclick="resetaFormulario()" class="btn btn-primary" value="Reiniciar">
             <button type="submit" class="btn btn-primary">Cadastrar</button>
@@ -52,7 +54,6 @@
         var strCPF = String(cpf).replace(/[^\d]/g, '')
 
         if (strCPF.length !== 11){
-            $('#validacaoCPF').val(false);
             return false;
         }
 
@@ -68,7 +69,6 @@
             '88888888888',
             '99999999999',
         ].indexOf(strCPF) !== -1){
-            $('#validacaoCPF').val(false);
             return false;
         }
 
@@ -82,7 +82,6 @@
         }
 
         if (Resto != parseInt(strCPF.substring(9, 10)) ){
-            $('#validacaoCPF').val(false);
             return false;
         }
 
@@ -98,11 +97,9 @@
         }
 
         if (Resto != parseInt(strCPF.substring(10, 11) ) ){
-            $('#validacaoCPF').val(false);
             return false;
         }
 
-        $('#validacaoCPF').val(true);
         return true;
     }
 
@@ -123,13 +120,10 @@
 
         if(idade < 18){
             alert("Pessoas menores de 18 não podem se cadastrar.");
-            $('#validacaoNascimento').val(false);
             return false;
         }
 
         if(idade >= 18 && idade <= 60){
-            alert("Maior de 18, pode se cadastrar.");
-            $('#validacaoNascimento').val(true);
             return true;
         }
 
@@ -158,10 +152,13 @@
         var strCPF = String(cpf).replace(/[^\d]/g, '');
         let cpfValido = validaCPF(cpf);
         let nascimentoValido = validadata();
-        console.log('cpf: ' + cpfValido, 'nascimento: ' + nascimentoValido);
 
         if (strCPF.length !== 11){
-            alert('preencha seu cpf completo');
+            Swal.fire({
+                title: "preencha seu cpf completo.",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
         } else {
             if(cpfValido == true && nascimentoValido == true){
                 var rotas = [
@@ -185,17 +182,31 @@
                         success: function(response) {
                             console.log(response.cadastro);
                             if(response.cadastro === 'true'){
-                                alert('CPF cadastrado com sucesso');
-                                location.reload();
+                                Swal.fire({
+                                    title: "CPF cadastrado com sucesso.",
+                                    icon: "success",
+                                    confirmButtonText: "OK"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        location.reload();
+                                    }
+                                });
                             } else {
-                                alert('CPF já cadastrado');
+                                Swal.fire({
+                                    title: "CPF já cadastrado.",
+                                    icon: "error",
+                                    confirmButtonText: "OK"
+                                });
                             }
                         }
                     });
                 }
-
             } else {
-                alert('digite um cpf válido e/ou data de nascimento válidos');
+                Swal.fire({
+                    title: "digite um cpf e/ou data de nascimento válidos",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
             }
         }
     });
